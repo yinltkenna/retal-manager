@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Services/" />
+  <Folder Name="/Services/gateway/">
+    <Project Path="Services/gateway/ApiGateway/ApiGateway.csproj" />
+  </Folder>
+  <Folder Name="/Services/identity-service/">
+    <Project Path="Services/identity-service/IdentityService.Tests/IdentityService.Tests.csproj" />
+    <Project Path="Services/identity-service/IdentityService/IdentityService.csproj" />
+  </Folder>
+  <Folder Name="/Services/notification-service/">
+    <Project Path="Services/notification-service/NotificationService.Tests/NotificationService.Tests.csproj" />
+    <Project Path="Services/notification-service/NotificationService/NotificationService.csproj" />
+  </Folder>
+  <Folder Name="/Services/property-service/">
+    <Project Path="Services/property-service/PropertyService.Tests/PropertyService.Tests.csproj" />
+    <Project Path="Services/property-service/PropertyService/PropertyService.csproj" />
+  </Folder>
+  <Project Path="EventContracts/EventContracts.csproj" />
+</Solution>

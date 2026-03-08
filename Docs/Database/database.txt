@@ -1,0 +1,96 @@
+1. Identity
+User: Id, Username, PasswordHash, PhoneNumber, Email, IsEmailConfirmed, TenantId, Status, IsActive, LastPasswordChangedAt, ResetPasswordToken, ResetPasswordExpiry, AccessFailedCount, LockOutEnd, CreatedAt, LastUpdatedAt
+
+Role: Id, Name, Description, IsActive, IsDeleted
+
+Permissions: Id, ParentId, IsActive, Code, Group, Name, Type, UrlIcon, Description, SortOrder
+
+RolePermission: RoleId, PermissionId
+
+UserRole: UserId, RoleId
+
+RefreshToken: Id, UserId, Token, ExpiresAt, CreatedAt, RevokedAt, IsRevoked, ReplacedByToken, IsExpired, IsActive
+
+EmailVerificationToken: Id, Email, Token, ExpiresAt, CreatedAt, IsUsed, UsedAt
+
+2. Property
+Branch: Id, Name, Address, Hotline, ManagerId, Description, IsActive, CreatedAt, UpdatedAt
+
+RoomType: Id, BranchId, TypeName, BasePrice, Area, Description, IsAvailable, IsDiscounted, CreatedAt, UpdatedAt
+
+Room: Id, RoomTypeId, RoomNumber, Status, IsAvailable, CreatedAt, UpdatedAt
+
+RoomPrice: Id, RoomTypeId, Price, PercentageDiscount, StartDate, EndDate, CreatedAt
+
+RoomImage: Id, RoomId, ImageUrl, IsPrimary, CreatedAt
+
+Amenity: Id, Name, Description, UrlIcon, CreatedAt
+
+RoomTypeAmenity: Id, RoomTypeId, AmenityId
+
+RoomMaintenance: Id, RoomId, Issue, Description, Status, CreatedAt, ResolvedAt
+
+RoomFacilityStatus: Id, RoomId, Name, Quantity, Status, CreatedAt
+
+RoomHistory: Id, RoomId, ContractId, StartDate, EndDate
+
+RoomReservation: Id, RoomId, TenantId, ReservedFrom, ReservedTo, Status, CreatedAt
+
+RoomStatusLog: Id, RoomId, OldStatus, NewStatus, ChangedAt, ChangedBy
+
+3. Tenancy
+Tenant: Id, FullName, PhoneNumber, IdentityCard, PermanentAddress, ProfileData, AvatarUrl, CreatedAt, UpdatedAt
+
+TenantIdentityDocument: Id, TenantId, DocumentType, DocumentNumber, IssuedDate, IssuedPlace, ImageFrontUrl, ImageBackUrl, CreatedAt, UpdatedAt
+
+TenantTemporaryResidence: Id, TenantId, ContractId, RegistrationNumber, RegisteredAt, ExpiredAt, Status
+
+ContractFile: Id, ContractId, FileUrl, FileType, UploadedAt
+
+ContractExtension: Id, ContractId, OldEndDate, NewEndDate, ApprovedAt, CreatedAt
+
+ContractTermination: Id, ContractId, TerminationDate, Reason, RefundDeposit, CreatedAt
+
+ContractDepositTransaction: Id, ContractId, Amount, TransactionType, TransactionDate, Note
+
+ContractRule: Id, ContractId, RuleTitle, RuleContent
+
+ContractHistory: Id, ContractId, OldStatus, NewStatus, ChangedAt, ChangedBy
+
+Contract: Id, ContractCode, RoomId, OwnerTenantId, SignedRoomNumber, SignedPrice, BranchAddress, StartDate, EndDate, ActualPrice, SignedRoomType, DepositAmount, PaymentCycle, BillingDay, Status, CreatedAt, UpdatedAt
+
+ContractMember: Id, ContractId, TenantId, IsRepresentative
+
+4. Utility
+UtilityConfig: Id, BranchId, UtilityTypeId, Unit, UnitPrice, StartDate, EndDate, CreatedAt, UpdatedAt
+
+UtilityType: Id, Name, Description, CreatedAt
+
+UtilityMeter: Id, RoomId, UtilityTypeId, MeterCode, IntalledDate, Status, CreatedAt
+
+MeterReading: Id, MeterId, PreviousValue, CurrentValue, Usage, ReadingDate, ImageUrl, RecordedBy, CreatedAt
+
+UtilityAdjustment: Id, MeterReadingId, AdjustmentAmount, Reason, CreatedAt
+
+UtilityReadingHistory: Id, MeterReadingId, OldValue, NewValue, ChangedBy, ChangedAt
+
+UtilityFixedCharge: Id, BranchId, UtilityTypeId, Amount, StartDate, EndDate, CreatedAt
+
+5. Billing
+Invoice: Id, InvoiceCode, ContractId, Month, Year, SubTotal, DiscountAmount, TotalAmount, DueDate, Status, Note, CreatedAt, UpdatedAt
+
+InvoiceDetail: Id, InvoiceId, ItemName, ItemType, Quantity, UnitPrice,Metadata, Amount
+
+InvoiceAdjustment: Id, InvoiceId, AdjustmentType, Amount, Reason, CreatedAt
+
+InvoiceHistory: Id, InvoiceId, OldStatus, NewStatus, ChangedAt, ChangedBy
+
+InvoiceSnapshot: Id, InvoiceId, RoomNumber, TenantName, ContractCode, BranchAddress, CreatedAt
+
+6. Payment
+PaymentAccount: Id, BranchId, BankName, AccountNumber, AccountHolder, QrTemplate
+
+Transaction: Id, InvoiceId, TransactionCode, Amount, PaymentMethod, Status, PaymentDate
+
+7. Notification
+Notification: Id, ReceiverId, Title, Content, Type, Channel, IsRead, CreatedAt

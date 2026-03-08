@@ -1,0 +1,88 @@
+services:
+  identity:
+    build:
+      context: .
+      dockerfile: Services\identity-service\IdentityService\Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=host.docker.internal;Database=IdentityDb;User Id=sa;Password=123;TrustServerCertificate=True;
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - Redis__Connection=redis:6379
+      - JwtSettings__Key=66869724acdaf603c964c8415f07cc79
+      - JwtSettings__Issuer=RentalIdentity
+      - JwtSettings__Audience=RentalClients
+      - JwtSettings__ExpiresInMinutes=60
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - rental-net
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Services\gateway\ApiGateway\Dockerfile
+    ports:
+      - "5002:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - JwtSettings__Key=66869724acdaf603c964c8415f07cc79
+      - JwtSettings__Issuer=RentalIdentity
+      - JwtSettings__Audience=RentalClients
+    depends_on:
+      - identity
+    networks:
+      - rental-net
+
+  notification:
+    build:
+      context: .
+      dockerfile: Services\notification-service\NotificationService\Dockerfile
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=host.docker.internal;Database=IdentityDb;User Id=sa;Password=123;TrustServerCertificate=True;
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - Redis__Connection=redis:6379
+      - JwtSettings__Key=66869724acdaf603c964c8415f07cc79
+      - JwtSettings__Issuer=RentalIdentity
+      - JwtSettings__Audience=RentalClients
+      - JwtSettings__ExpiresInMinutes=60
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - rental-net
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    networks:
+      - rental-net
+      
+  redis-insight:
+    image: redislabs/redisinsight:1.14.0
+    ports:
+      - "8001:8001"
+    networks:
+      - rental-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - rental-net
+
+networks:
+  rental-net:
+    driver: bridge

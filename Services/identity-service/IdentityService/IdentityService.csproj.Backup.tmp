@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Caching\" />
+    <Folder Include="Common\Constants\" />
+    <Folder Include="Common\Extensions\" />
+    <Folder Include="Controllers\" />
+    <Folder Include="DbContext\" />
+    <Folder Include="DTOs\Requests\" />
+    <Folder Include="DTOs\Responses\" />
+    <Folder Include="Messaging\Consumers\" />
+    <Folder Include="Messaging\EventContracts\" />
+    <Folder Include="Messaging\Outbox\" />
+    <Folder Include="Messaging\Publishers\" />
+    <Folder Include="Middleware\" />
+    <Folder Include="Repositories\Interfaces\" />
+    <Folder Include="Services\Interfaces\" />
+  </ItemGroup>
+
+</Project>
