@@ -1,5 +1,6 @@
 using IdentityService.src.Application.DTOs.Requests.Role;
 using IdentityService.src.Application.Services.Interfaces;
+using IdentityService.src.Web.Common.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -69,19 +70,6 @@ namespace IdentityService.src.Web.Controllers
         }
 
         /// <summary>
-        /// Assign role to single user
-        /// </summary>
-        [HttpPost("assign-to-user")]
-        public async Task<IActionResult> AssignRoleToUser([FromBody] AssignRolesToUserRequest request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = await _roleService.AssignRoleToUser(request.RoleIds, new List<Guid> { request.UserId });
-            return result.Success ? Ok(result) : BadRequest(result);
-        }
-
-        /// <summary>
         /// Assign roles to multiple users
         /// </summary>
         [HttpPost("assign-to-users")]
@@ -90,8 +78,13 @@ namespace IdentityService.src.Web.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _roleService.AssignRoleToUser(request.RoleIds, new List<Guid> { request.UserId });
-            return result.Success ? Ok(result) : BadRequest(result);
+            var currentUserId = new GetUserIdFromToken().UserIdFromToken;
+            if(currentUserId.HasValue)
+            {
+                var result = await _roleService.AssignRoleToUser(request.RoleIds, request.UserId, currentUserId.Value);
+                return result.Success ? Ok(result) : BadRequest(result);
+            }
+            return BadRequest("Invalid user ID");
         }
 
         /// <summary>
@@ -103,7 +96,7 @@ namespace IdentityService.src.Web.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _roleService.RemoveRoleFromUser(request.RoleIds, new List<Guid> { request.UserId });
+            var result = await _roleService.RemoveRoleFromUser(request.RoleIds, new List<Guid> { request.UserId }, request.UserId);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 

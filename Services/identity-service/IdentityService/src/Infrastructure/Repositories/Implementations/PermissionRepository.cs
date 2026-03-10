@@ -9,6 +9,16 @@ namespace IdentityService.src.Infrastructure.Repositories.Implementations
     {
         private readonly AppDbContext _db = db;
 
+        public async Task AddAsync(Permission permission)
+        {
+            await _db.Permissions.AddAsync(permission);
+        }
+
+        public async Task AddRolePermissionsRangeAsync(List<RolePermission> rolePermissions)
+        {
+            await _db.RolePermissions.AddRangeAsync(rolePermissions);
+        }
+
         public async Task<List<Permission>> GetAllAsync()
         {
             return await _db.Permissions.ToListAsync();
@@ -26,6 +36,18 @@ namespace IdentityService.src.Infrastructure.Repositories.Implementations
             return await _db.Permissions.FirstOrDefaultAsync(p => p.Id == id);
         }
 
+        public Task<List<RolePermission>> GetExistingRolePermissionsAsync(List<Guid> roleIds, List<Guid> permissionIds)
+        {
+            return _db.RolePermissions
+                .Where(rp => roleIds.Contains(rp.RoleId) && permissionIds.Contains(rp.PermissionId))
+                .ToListAsync();
+        }
+
+        public Task<Permission?> GetPermissionByCodeAsync(string code)
+        {
+            return _db.Permissions.FirstOrDefaultAsync(p => p.Code == code);
+        }
+
         public async Task<List<Permission>> GetPermissionsByRoleIdAsync(Guid roleId)
         {
             return await _db.RolePermissions
@@ -41,6 +63,11 @@ namespace IdentityService.src.Infrastructure.Repositories.Implementations
                 .Join(_db.Permissions, rp => rp.PermissionId, p => p.Id, (rp, p) => p)
                 .Distinct()
                 .ToListAsync();
+        }
+
+        public Task RemoveRolePermissionsRangeAsync(List<Guid> roleIds, List<Guid> permissionIds)
+        {
+            throw new NotImplementedException();
         }
 
         public void Update(Permission permission)

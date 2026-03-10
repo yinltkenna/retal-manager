@@ -4,10 +4,8 @@ using IdentityService.src.Application.DTOs.Responses.Permessions;
 using IdentityService.src.Application.DTOs.Responses.Roles;
 using IdentityService.src.Application.Services.Interfaces;
 using IdentityService.src.Domain.Entities;
-using IdentityService.src.Infrastructure.Data;
 using IdentityService.src.Infrastructure.Repositories.Interfaces;
 using IdentityService.src.Web.Common.TemplateResponses;
-using Microsoft.EntityFrameworkCore;
 
 namespace IdentityService.src.Application.Services.Implementations
 {
@@ -15,14 +13,12 @@ namespace IdentityService.src.Application.Services.Implementations
                              IRoleRepository roleRepo,
                              IUserRepository userRepo,
                              IPermissionRepository permissionRepo,
-                             AppDbContext db,
                              IUnitOfWork uow,
                              IMapper mapper) : IRoleService
     {
         private readonly IRoleRepository _roleRepo = roleRepo;
         private readonly IUserRepository _userRepo = userRepo;
         private readonly IPermissionRepository _permissionRepo = permissionRepo;
-        private readonly AppDbContext _db = db;
         private readonly IUnitOfWork _uow = uow;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<RoleService> _logger = logger;
@@ -166,22 +162,26 @@ namespace IdentityService.src.Application.Services.Implementations
             }
         }
 
-        public async Task<ApiResponse<bool>> AssignRoleToUser(Guid roleId, Guid userId)
+        public async Task<ApiResponse<bool>> AssignRoleToUser(Guid roleId, Guid userIdBeAssign, Guid userIdRequest)
         {
             try
             {
-                var user = await _userRepo.GetByIdAsync(userId);
-                if (user == null) return ApiResponse<bool>.FailResponse("User not found");
-                var role = await _roleRepo.GetByIdAsync(roleId);
-                if (role == null) return ApiResponse<bool>.FailResponse("Role not found");
+                if(userIdBeAssign == userIdRequest)
+                    return ApiResponse<bool>.FailResponse("You cannot assign role to yourself");
 
-                bool exists = await _db.UserRoles.AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
-                if (!exists)
+                var exists = await _roleRepo.ExistsRoleAsync(userIdBeAssign, roleId);
+                if (exists)
+                    return ApiResponse<bool>.FailResponse("User already has this role");
+
+                var success = await _roleRepo.AssignRoleToUserAsync(userIdBeAssign, roleId);
+                if (success)
                 {
-                    _db.UserRoles.Add(new UserRole { UserId = userId, RoleId = roleId });
                     await _uow.SaveChangesAsync();
+                    _logger.LogInformation("User {UserId} assigned role {RoleId} by {AdminId}", userIdBeAssign, roleId, userIdRequest);
+                    return ApiResponse<bool>.SuccessResponse(true, "Role assigned successfully");
                 }
-                return ApiResponse<bool>.SuccessResponse(true);
+
+                return ApiResponse<bool>.FailResponse("Assigning failed");
             }
             catch (Exception ex)
             {
@@ -190,21 +190,39 @@ namespace IdentityService.src.Application.Services.Implementations
             }
         }
 
-        public async Task<ApiResponse<bool>> AssignRoleToUser(List<Guid> roleId, List<Guid> userIds)
+        public async Task<ApiResponse<bool>> AssignRoleToUser(List<Guid> roleIds, List<Guid> userIdsBeAssign, Guid userIdRequest)
         {
             try
             {
-                foreach (var r in roleId)
+                if (userIdsBeAssign.Contains(userIdRequest))
+                    return ApiResponse<bool>.FailResponse("You cannot assign role to yourself");
+                var existingRoles = await _roleRepo.GetExistingUserRolesAsync(userIdsBeAssign, roleIds);
+
+                var existingSet = new HashSet<(Guid, Guid)>(
+                    existingRoles.Select(x => (x.UserId, x.RoleId))
+                );
+
+                var rolesToAdd = new List<UserRole>();
+                foreach (var uId in userIdsBeAssign)
                 {
-                    foreach (var u in userIds)
+                    foreach (var rId in roleIds)
                     {
-                        bool exists = await _db.UserRoles.AnyAsync(ur => ur.UserId == u && ur.RoleId == r);
-                        if (!exists)
-                            _db.UserRoles.Add(new UserRole { UserId = u, RoleId = r });
+                        if (!existingSet.Contains((uId, rId)))
+                        {
+                            rolesToAdd.Add(new UserRole { UserId = uId, RoleId = rId });
+                        }
                     }
                 }
-                await _uow.SaveChangesAsync();
-                return ApiResponse<bool>.SuccessResponse(true);
+
+                if (rolesToAdd.Count != 0)
+                {
+                    await _roleRepo.AddUserRolesRangeAsync(rolesToAdd);
+                    await _uow.SaveChangesAsync();
+
+                    _logger.LogInformation("Admin {AdminId} assigned {Count} roles to multiple users", userIdRequest, rolesToAdd.Count);
+                }
+
+                return ApiResponse<bool>.SuccessResponse(true, "Process completed successfully");
             }
             catch (Exception ex)
             {
@@ -213,58 +231,82 @@ namespace IdentityService.src.Application.Services.Implementations
             }
         }
 
-        public async Task<ApiResponse<bool>> RemoveRoleFromUser(List<Guid> roleId, List<Guid> userIds)
+        public async Task<ApiResponse<bool>> RemoveRoleFromUser(List<Guid> roleId, List<Guid> userIdsBeRemove, Guid userIdRequest)
         {
             try
             {
-                var toRemove = _db.UserRoles.Where(ur => userIds.Contains(ur.UserId) && roleId.Contains(ur.RoleId));
-                _db.UserRoles.RemoveRange(toRemove);
+                if (userIdsBeRemove.Contains(userIdRequest))
+                {
+                    return ApiResponse<bool>.FailResponse("You cannot remove roles from yourself");
+                }
+
+                await _roleRepo.RemoveUserRolesRangeAsync(roleId, userIdsBeRemove);
+
                 await _uow.SaveChangesAsync();
-                return ApiResponse<bool>.SuccessResponse(true);
+
+                _logger.LogInformation("Admin {AdminId} removed multiple roles from a list of users", userIdRequest);
+
+                return ApiResponse<bool>.SuccessResponse(true, "Roles removed successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"RemoveRoleFromUser error: {ex.Message}");
+                _logger.LogError(ex, "RemoveRoleFromUser error: {Message}", ex.Message);
                 return ApiResponse<bool>.FailResponse("Error removing roles from users");
             }
         }
-
-        public async Task<ApiResponse<bool>> AssignPermissionsToRoles(List<Guid> permissionId, List<Guid> roleIds)
+        public async Task<ApiResponse<bool>> AssignPermissionsToRoles(List<Guid> permissionIds, List<Guid> roleIds)
         {
             try
             {
-                foreach (var r in roleIds)
+                var existing = await _roleRepo.GetExistingRolePermissionsAsync(roleIds, permissionIds);
+
+                var existingSet = new HashSet<(Guid RoleId, Guid PermissionId)>(
+                    existing.Select(x => (x.RoleId, x.PermissionId))
+                );
+
+                var toAdd = new List<RolePermission>();
+
+                foreach (var rId in roleIds)
                 {
-                    foreach (var p in permissionId)
+                    foreach (var pId in permissionIds)
                     {
-                        bool exists = await _db.RolePermissions.AnyAsync(rp => rp.RoleId == r && rp.PermissionId == p);
-                        if (!exists)
-                            _db.RolePermissions.Add(new RolePermission { RoleId = r, PermissionId = p });
+                        if (!existingSet.Contains((rId, pId)))
+                        {
+                            toAdd.Add(new RolePermission { RoleId = rId, PermissionId = pId });
+                        }
                     }
                 }
-                await _uow.SaveChangesAsync();
-                return ApiResponse<bool>.SuccessResponse(true);
+
+                if (toAdd.Any())
+                {
+                    await _roleRepo.AddRolePermissionsRangeAsync(toAdd);
+                    await _uow.SaveChangesAsync();
+                }
+
+                return ApiResponse<bool>.SuccessResponse(true, $"Successfully assigned {toAdd.Count} new permissions.");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"AssignPermissionToRole error: {ex.Message}");
-                return ApiResponse<bool>.FailResponse("Error assigning permissions to role");
+                _logger.LogError(ex, "AssignPermissionsToRoles error: {Message}", ex.Message);
+                return ApiResponse<bool>.FailResponse("Error assigning permissions to roles");
             }
         }
 
-        public async Task<ApiResponse<bool>> RemovePermissionFromRole(List<Guid> permissionId, List<Guid> roleIds)
+        public async Task<ApiResponse<bool>> RemovePermissionFromRole(List<Guid> permissionIds, List<Guid> roleIds)
         {
             try
             {
-                var toRemove = _db.RolePermissions.Where(rp => roleIds.Contains(rp.RoleId) && permissionId.Contains(rp.PermissionId));
-                _db.RolePermissions.RemoveRange(toRemove);
+                await _roleRepo.RemoveRolePermissionsRangeAsync(permissionIds, roleIds);
+
                 await _uow.SaveChangesAsync();
-                return ApiResponse<bool>.SuccessResponse(true);
+
+                _logger.LogInformation("Removed permissions from roles successfully");
+                return ApiResponse<bool>.SuccessResponse(true, "Permissions removed successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"RemovePermissionFromRole error: {ex.Message}");
-                return ApiResponse<bool>.FailResponse("Error removing permissions from role");
+                _logger.LogError(ex, "RemovePermissionFromRole error: {Message}", ex.Message);
+                return ApiResponse<bool>.FailResponse("Error removing permissions from roles");
             }
         }
 

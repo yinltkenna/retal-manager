@@ -15,5 +15,9 @@
     <Project Path="Services/property-service/PropertyService.Tests/PropertyService.Tests.csproj" />
     <Project Path="Services/property-service/PropertyService/PropertyService.csproj" />
   </Folder>
+  <Folder Name="/Services/tenancy-service/">
+    <Project Path="Services/tenancy-service/TenancyService.Tests/TenancyService.Tests.csproj" />
+    <Project Path="Services/tenancy-service/TenancyService/TenancyService.csproj" />
+  </Folder>
   <Project Path="EventContracts/EventContracts.csproj" />
 </Solution>

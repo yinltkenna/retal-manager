@@ -1,5 +1,5 @@
 using AutoMapper;
-using EventContracts.Authorization;
+using EventContracts.Authorization.Permissions.IdentityService;
 using EventContracts.Authorization.PermissionsAuthorization;
 using IdentityService.src.Application.DTOs.Requests.User;
 using IdentityService.src.Application.DTOs.Responses.Permessions;
@@ -22,7 +22,6 @@ namespace IdentityService.src.Application.Services.Implementations
     public class UserService(ILogger<UserService> logger,
                              IUserRepository userRepo,
                              IPermissionRepository permissionRepo,
-                             AppDbContext db,
                              IRoleService roleService,
                              IUnitOfWork uow,
                              IRabbitMqPublisher publisher,
@@ -34,7 +33,6 @@ namespace IdentityService.src.Application.Services.Implementations
     {
         private readonly IUserRepository _userRepo = userRepo;
         private readonly IPermissionRepository _permissionRepo = permissionRepo;
-        private readonly AppDbContext _db = db;
         private readonly IRoleService _roleService = roleService;
         private readonly IUnitOfWork _uow = uow;
         private readonly IRabbitMqPublisher _publisher = publisher;
@@ -55,7 +53,7 @@ namespace IdentityService.src.Application.Services.Implementations
             return result.Succeeded;
         }
 
-        public async Task<ApiResponse<string>> CreateUserAsync(CreateUserRequest request)
+        public async Task<ApiResponse<string>> CreateUserAsync(CreateUserRequest request, Guid currentUserId)
         {
             try
             {
@@ -112,7 +110,7 @@ namespace IdentityService.src.Application.Services.Implementations
                 // Assign role
                 if (request.RoleId != Guid.Empty)
                 {
-                    await _roleService.AssignRoleToUser(request.RoleId, newUser.Id);
+                    await _roleService.AssignRoleToUser(request.RoleId, newUser.Id, currentUserId);
                 }
 
                 await _uow.SaveChangesAsync();
@@ -125,7 +123,7 @@ namespace IdentityService.src.Application.Services.Implementations
                 return ApiResponse<string>.FailResponse("Error creating user");
             }
         }
-        public async Task<ApiResponse<string>> DeleteUserAsync(Guid id)
+        public async Task<ApiResponse<string>> DeleteUserAsync(Guid idToDel, Guid idRequest)
         {
             try
             {
@@ -134,11 +132,20 @@ namespace IdentityService.src.Application.Services.Implementations
                     return ApiResponse<string>.FailResponse("Unauthorized");
                 }
 
-                var user = await _userRepo.GetByIdAsync(id);
+                if(idToDel != Guid.Empty && idRequest != Guid.Empty) {
+                    if(idToDel == idRequest) {
+                        return ApiResponse<string>.FailResponse("You cannot delete yourself");
+                    }
+                } else {
+                    return ApiResponse<string>.FailResponse("Invalid user ID");
+                }
+
+                var user = await _userRepo.GetByIdAsync(idToDel);
                 if (user == null)
                     return ApiResponse<string>.FailResponse("User not found");
 
                 user.IsDeleted = true;
+                user.LastUpdatedAt = DateTime.UtcNow;
                 await _uow.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("User deleted");
             }
@@ -160,7 +167,7 @@ namespace IdentityService.src.Application.Services.Implementations
 
                 if (request.PageSize <= 0) request.PageSize = 15;
 
-                var query = _db.Users.AsQueryable();
+                var query = await _userRepo.GetAllUsers();
 
                 if (!string.IsNullOrWhiteSpace(request.SearchTerm))
                 {
@@ -252,7 +259,9 @@ namespace IdentityService.src.Application.Services.Implementations
                 var user = await _userRepo.GetByIdAsync(id);
                 if (user == null) return ApiResponse<string>.FailResponse("User not found");
 
+                // Lock until 100 years later (effectively permanent lock)
                 user.LockOutEnd = DateTime.UtcNow.AddYears(100);
+                user.LastUpdatedAt = DateTime.UtcNow;
                 await _uow.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("User locked");
             }
@@ -275,6 +284,7 @@ namespace IdentityService.src.Application.Services.Implementations
                 if (user == null) return ApiResponse<string>.FailResponse("User not found");
 
                 user.LockOutEnd = null;
+                user.LastUpdatedAt = DateTime.UtcNow;
                 await _uow.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("User unlocked");
             }
@@ -306,7 +316,7 @@ namespace IdentityService.src.Application.Services.Implementations
                 {
                     user.PhoneNumber = request.PhoneNumber;
                 }
-
+                user.LastUpdatedAt = DateTime.UtcNow;
                 await _uow.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("Profile updated");
             }
@@ -332,7 +342,8 @@ namespace IdentityService.src.Application.Services.Implementations
                     user.PhoneNumber = request.PhoneNumber;
                 if (request.IsActive.HasValue)
                     user.IsActive = request.IsActive.Value;
-
+                
+                user.LastUpdatedAt = DateTime.UtcNow;
                 await _uow.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("User updated");
             }

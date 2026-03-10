@@ -1,22 +1,23 @@
 using EventContracts.Authorization;
+using EventContracts.Authorization.Permissions.IdentityService;
 using IdentityService.src.Domain.Entities;
 
 namespace IdentityService.src.Application.Definitions
 {
     public static class PermissionDefinitions
     {
-        public static readonly Guid ViewId = Guid.Parse("a8e96f8f-6ae8-4ffb-bb90-5a90786951d1");
-        public static readonly Guid CreateId = Guid.Parse("c9a3c1a0-2d0a-4a88-bfa2-72ee4178fd3f");
-        public static readonly Guid UpdateId = Guid.Parse("3f9c82c7-aa6e-4b34-9e35-971f2be1a378");
-        public static readonly Guid DeleteId = Guid.Parse("7c5d8dc0-7169-4b2e-8d44-9a7bb9fcc0e8");
-        public static readonly Guid LockId = Guid.Parse("e8c1e1b3-50ac-4361-a2f1-3736ca3d6a92");
-        public static readonly Guid ViewLogsId = Guid.Parse("1b5aeb2f-e5b6-41c4-9c6a-3a8a9acb0d3f");
+        public static readonly Guid UserViewId = DefId.UserViewId;
+        public static readonly Guid UserCreateId = DefId.UserCreateId;
+        public static readonly Guid UserUpdateId = DefId.UserUpdateId;
+        public static readonly Guid UserDeleteId = DefId.UserDeleteId;
+        public static readonly Guid UserLockId = DefId.UserLockId;
+        public static readonly Guid UserViewLogsId = DefId.UserViewLogsId;
 
         public static IEnumerable<Permission> Get() =>
         [
             new Permission
             {
-                Id = ViewId,
+                Id = UserViewId,
                 Code = UserPermissions.VIEW,
                 Name = "View User",
                 Group = "User",
@@ -26,7 +27,7 @@ namespace IdentityService.src.Application.Definitions
             },
             new Permission
             {
-                Id = CreateId,
+                Id = UserCreateId,
                 Code = UserPermissions.CREATE,
                 Name = "Create User",
                 Group = "User",
@@ -36,7 +37,7 @@ namespace IdentityService.src.Application.Definitions
             },
             new Permission
             {
-                Id = UpdateId,
+                Id = UserUpdateId,
                 Code = UserPermissions.UPDATE,
                 Name = "Update User",
                 Group = "User",
@@ -46,7 +47,7 @@ namespace IdentityService.src.Application.Definitions
             },
             new Permission
             {
-                Id = DeleteId,
+                Id = UserDeleteId,
                 Code = UserPermissions.DELETE,
                 Name = "Delete User",
                 Group = "User",
@@ -56,7 +57,7 @@ namespace IdentityService.src.Application.Definitions
             },
             new Permission
             {
-                Id = LockId,
+                Id = UserLockId,
                 Code = UserPermissions.LOCK,
                 Name = "Lock User",
                 Group = "User",
@@ -66,7 +67,7 @@ namespace IdentityService.src.Application.Definitions
             },
             new Permission
             {
-                Id = ViewLogsId,
+                Id = UserViewLogsId,
                 Code = UserPermissions.VIEW_LOGS,
                 Name = "View User Logs",
                 Group = "User",

@@ -7,24 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="src\Infrastructure\Messaging\Consumers\**" />
-    <Compile Remove="src\Infrastructure\Messaging\Outbox\**" />
-    <Compile Remove="src\Web\Common\Constants\**" />
-    <Compile Remove="src\Web\Common\Extensions\**" />
-    <Content Remove="src\Infrastructure\Messaging\Consumers\**" />
-    <Content Remove="src\Infrastructure\Messaging\Outbox\**" />
-    <Content Remove="src\Web\Common\Constants\**" />
-    <Content Remove="src\Web\Common\Extensions\**" />
-    <EmbeddedResource Remove="src\Infrastructure\Messaging\Consumers\**" />
-    <EmbeddedResource Remove="src\Infrastructure\Messaging\Outbox\**" />
-    <EmbeddedResource Remove="src\Web\Common\Constants\**" />
-    <EmbeddedResource Remove="src\Web\Common\Extensions\**" />
-    <None Remove="src\Infrastructure\Messaging\Consumers\**" />
-    <None Remove="src\Infrastructure\Messaging\Outbox\**" />
-    <None Remove="src\Web\Common\Constants\**" />
-    <None Remove="src\Web\Common\Extensions\**" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\EventContracts\EventContracts.csproj" />
   </ItemGroup>
 

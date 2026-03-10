@@ -109,32 +109,6 @@ namespace IdentityService.src.Infrastructure.Data
                 .Property(r => r.Name)
                 .IsRequired()
                 .HasMaxLength(100);
-
-            // Seed initial data
-            SeedData(modelBuilder);
-        }
-        private static void SeedData(ModelBuilder modelBuilder)
-        {
-            // Seed User
-            modelBuilder.Entity<User>()
-                .HasData(UserDefinitions.Get());
-
-            // Seed Roles
-            modelBuilder.Entity<Role>()
-                .HasData(RoleDefinitions.Get());
-
-            // Seed Permission
-            modelBuilder.Entity<Permission>()
-                .HasData(PermissionDefinitions.Get());
-
-            // Seed UserRoles
-            modelBuilder.Entity<UserRole>()
-                .HasData(UserRoleDefinitions.Get());
-
-            // Seed RolePermissions
-            modelBuilder.Entity<RolePermission>()
-                .HasData(RolePermissionDefinitions.Get());
-
         }
     }
 }

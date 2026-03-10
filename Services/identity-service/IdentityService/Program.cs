@@ -1,4 +1,4 @@
-﻿using EventContracts.Authorization;
+﻿using EventContracts.Authorization.Permissions.IdentityService;
 using EventContracts.Authorization.PermissionsAuthorization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -9,6 +9,7 @@ using IdentityService.src.Application.Validator;
 using IdentityService.src.Infrastructure.Caching;
 using IdentityService.src.Infrastructure.Clients;
 using IdentityService.src.Infrastructure.Data;
+using IdentityService.src.Infrastructure.Data.Seed;
 using IdentityService.src.Infrastructure.Messaging.Publishers;
 using IdentityService.src.Infrastructure.Repositories.Implementations;
 using IdentityService.src.Infrastructure.Repositories.Interfaces;
@@ -104,11 +105,7 @@ builder.Services.AddPermissionAuthorization(
     UserPermissions.UPDATE,
     UserPermissions.DELETE,
     UserPermissions.LOCK,
-    UserPermissions.VIEW_LOGS,
-    RoomPermissions.VIEW,
-    RoomPermissions.CREATE,
-    RoomPermissions.UPDATE,
-    RoomPermissions.DELETE
+    UserPermissions.VIEW_LOGS
 );
 
 // infrastructure
@@ -151,45 +148,20 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen(c =>
-//{
-//    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Identity Service API", Version = "v1" });
-
-//    var securityScheme = new OpenApiSecurityScheme
-//    {
-//        Name = "Authorization",
-//        Description = "Enter: Bearer {token}",
-//        In = ParameterLocation.Header,
-//        Type = SecuritySchemeType.Http,
-//        Scheme = "bearer",
-//        BearerFormat = "JWT"
-//    };
-
-//    c.AddSecurityDefinition("Bearer", securityScheme);
-
-//    var requirement = new OpenApiSecurityRequirement
-//    {
-//        { new OpenApiSecuritySchemeReference("Bearer", null, null), new List<string>() }
-//    };
-
-//    c.AddSecurityRequirement(doc => requirement);
-//});
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Identity Service API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Property Service API", Version = "v1" });
 
-    // 1. Định nghĩa cơ chế bảo mật (Security Definition)
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
-        Scheme = "Bearer", // Lưu ý: Chữ 'B' viết hoa thường chuẩn hơn
+        Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Nhập Token của bạn vào đây (KHÔNG cần gõ chữ 'Bearer ' ở trước)"
+        Description = "Enter 'Bearer' [space] and then your token in the text input below."
     });
 
-    // 2. Áp dụng cơ chế bảo mật cho toàn bộ API (Security Requirement)
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -198,7 +170,7 @@ builder.Services.AddSwaggerGen(c =>
                 Reference = new OpenApiReference
                 {
                     Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer" // ID này PHẢI khớp với tên ở AddSecurityDefinition phía trên
+                    Id = "Bearer"
                 }
             },
             Array.Empty<string>()
@@ -206,6 +178,33 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+});
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var validationErrors = context.ModelState
+            .Where(e => e.Value.Errors.Count > 0)
+            .Select(e => new
+            {
+                Field = e.Key,
+                Errors = e.Value.Errors.Select(er => er.ErrorMessage)
+            })
+            .ToList();
+
+        var response = new ApiResponse<object>
+        {
+            Success = false,
+            Message = "Validation failed",
+            Data = validationErrors
+        };
+
+        return new BadRequestObjectResult(response);
+    };
+});
 
 builder.Services.AddHttpClient();
 var app = builder.Build();
@@ -233,7 +232,8 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    Thread.Sleep(10000);
-    db.Database.Migrate();
+    await db.Database.MigrateAsync();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    await IdentitySeeder.SeedAsync(db, logger);
 }
 app.Run();

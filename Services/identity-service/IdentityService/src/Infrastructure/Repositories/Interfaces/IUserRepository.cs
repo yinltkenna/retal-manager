@@ -4,6 +4,7 @@ namespace IdentityService.src.Infrastructure.Repositories.Interfaces
 {
     public interface IUserRepository
     {
+        Task<IQueryable<User>> GetAllUsers();
         Task<User?> GetByIdAsync(Guid id);
         Task<User?> GetByUsernameAsync(string username);
         Task<User?> GetByEmailAsync(string email);

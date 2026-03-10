@@ -15,9 +15,9 @@ namespace IdentityService.src.Application.Services.Interfaces
         Task<ApiResponse<string>> UpdateProfileAsync(Guid userId, UpdateProfileRequest request);
 
         // Admin operations
-        Task<ApiResponse<string>> CreateUserAsync(CreateUserRequest request);
+        Task<ApiResponse<string>> CreateUserAsync(CreateUserRequest request, Guid currentUserId);
         Task<ApiResponse<string>> UpdateUserAsync(Guid id, UpdateUserRequest request);
-        Task<ApiResponse<string>> DeleteUserAsync(Guid id); // Soft delete
+        Task<ApiResponse<string>> DeleteUserAsync(Guid idToDel, Guid idRequest); // Soft delete
         Task<ApiResponse<string>> LockUserAsync(Guid id);
         Task<ApiResponse<string>> UnlockUserAsync(Guid id);
     }

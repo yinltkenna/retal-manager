@@ -14,38 +14,38 @@ RefreshToken: Id, UserId, Token, ExpiresAt, CreatedAt, RevokedAt, IsRevoked, Rep
 EmailVerificationToken: Id, Email, Token, ExpiresAt, CreatedAt, IsUsed, UsedAt
 
 2. Property
-Branch: Id, Name, Address, Hotline, ManagerId, Description, IsActive, CreatedAt, UpdatedAt
+Branch: Id, Name, Address, Hotline, ManagerId, Description, IsActive, IsDeleted, CreatedAt, UpdatedAt
 
-RoomType: Id, BranchId, TypeName, BasePrice, Area, Description, IsAvailable, IsDiscounted, CreatedAt, UpdatedAt
+RoomType: Id, BranchId, TypeName, BasePrice, Area, Description, IsAvailable, IsDeleted, IsDiscounted, CreatedAt, UpdatedAt
 
-Room: Id, RoomTypeId, RoomNumber, Status, IsAvailable, CreatedAt, UpdatedAt
+Room: Id, RoomTypeId, RoomNumber, Status, IsAvailable, IsDeleted, CreatedAt, UpdatedAt
 
-RoomPrice: Id, RoomTypeId, Price, PercentageDiscount, StartDate, EndDate, CreatedAt
+RoomPrice: Id, RoomTypeId, Price, PercentageDiscount, IsDeleted, StartDate, EndDate, CreatedAt
 
-RoomImage: Id, RoomId, ImageUrl, IsPrimary, CreatedAt
+RoomImage: Id, RoomId, FileId, IsPrimary, IsDeleted, CreatedAt
 
-Amenity: Id, Name, Description, UrlIcon, CreatedAt
+Amenity: Id, Name, Description, IconFileId, IsDeleted, CreatedAt
 
-RoomTypeAmenity: Id, RoomTypeId, AmenityId
+RoomTypeAmenity: Id, RoomTypeId, IsDeleted, AmenityId
 
-RoomMaintenance: Id, RoomId, Issue, Description, Status, CreatedAt, ResolvedAt
+RoomMaintenance: Id, RoomId, Issue, Description, Status, IsDeleted, CreatedAt, ResolvedAt
 
-RoomFacilityStatus: Id, RoomId, Name, Quantity, Status, CreatedAt
+RoomFacilityStatus: Id, RoomId, Name, Quantity, IsDeleted, Status, CreatedAt
 
-RoomHistory: Id, RoomId, ContractId, StartDate, EndDate
+RoomHistory: Id, RoomId, ContractId, IsDeleted, StartDate, EndDate
 
-RoomReservation: Id, RoomId, TenantId, ReservedFrom, ReservedTo, Status, CreatedAt
+RoomReservation: Id, RoomId, TenantId, ReservedFrom, ReservedTo, IsDeleted, Status, CreatedAt
 
 RoomStatusLog: Id, RoomId, OldStatus, NewStatus, ChangedAt, ChangedBy
 
 3. Tenancy
-Tenant: Id, FullName, PhoneNumber, IdentityCard, PermanentAddress, ProfileData, AvatarUrl, CreatedAt, UpdatedAt
+Tenant: Id, FullName, PhoneNumber, IdentityCard, PermanentAddress, ProfileData, AvatarFileId, CreatedAt, UpdatedAt
 
-TenantIdentityDocument: Id, TenantId, DocumentType, DocumentNumber, IssuedDate, IssuedPlace, ImageFrontUrl, ImageBackUrl, CreatedAt, UpdatedAt
+TenantIdentityDocument: Id, TenantId, DocumentType, DocumentNumber, IssuedDate, IssuedPlace, ImageFrontFileId, ImageBackFileId, CreatedAt, UpdatedAt
 
 TenantTemporaryResidence: Id, TenantId, ContractId, RegistrationNumber, RegisteredAt, ExpiredAt, Status
 
-ContractFile: Id, ContractId, FileUrl, FileType, UploadedAt
+ContractFile: Id, ContractId, FileFileId, FileType, UploadedAt
 
 ContractExtension: Id, ContractId, OldEndDate, NewEndDate, ApprovedAt, CreatedAt
 
@@ -68,7 +68,7 @@ UtilityType: Id, Name, Description, CreatedAt
 
 UtilityMeter: Id, RoomId, UtilityTypeId, MeterCode, IntalledDate, Status, CreatedAt
 
-MeterReading: Id, MeterId, PreviousValue, CurrentValue, Usage, ReadingDate, ImageUrl, RecordedBy, CreatedAt
+MeterReading: Id, MeterId, PreviousValue, CurrentValue, Usage, ReadingDate, ImageFileId, RecordedBy, CreatedAt
 
 UtilityAdjustment: Id, MeterReadingId, AdjustmentAmount, Reason, CreatedAt
 
@@ -93,4 +93,24 @@ PaymentAccount: Id, BranchId, BankName, AccountNumber, AccountHolder, QrTemplate
 Transaction: Id, InvoiceId, TransactionCode, Amount, PaymentMethod, Status, PaymentDate
 
 7. Notification
-Notification: Id, ReceiverId, Title, Content, Type, Channel, IsRead, CreatedAt
+Notification: Id, Title, Content, Type, ReferenceId, CreatedAt
+
+NotificationRecipient: Id, NotificationId, ReceiverId, IsRead, ReadAt, CreatedAt
+
+NotificationDelivery: Id, NotificationRecipientId, Channel, Status, SentAt, ErrorMessage
+
+NotificationTemplate: Id, Code, TitleTemplate, ContentTemplate, CreatedAt
+
+NotificationChannelConfig: Id, Channel, ConfigKey, ConfigValue, IsActive, CreatedAt
+
+NotificationUserPreference: Id, UserId, NotificationType, Channel, IsEnabled
+
+8. Media
+FileStorage: Id, FileName, OriginalFileName, ContentType, Extension, FileSize, StoragePath, PublicUrl, CheckSum, UploadedBy, CreatedAt
+
+FileReference: Id, FileId, EntityType, EntityId, Purpose, CreatedAt
+
+FileVariant: Id, FileId, VariantType, Width, Height, FilePath, PublicUrl, CreatedAt
+
+FileAccessLog: Id, FileId, AccessedBy, AccessedAt, IpAddress
+

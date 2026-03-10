@@ -90,6 +90,8 @@ $folders = @(
     # --- Tầng Infrastructure (Chứa kết nối ngoại vi) ---
     "src\Infrastructure\Data",             # Thay cho DbContext
     "src\Infrastructure\Repositories",
+    "src\Infrastructure\Repositories\Implementations",
+    "src\Infrastructure\Repositories\Interfaces",
     "src\Infrastructure\Caching",
     "src\Infrastructure\Messaging",
     "src\Infrastructure\Messaging\Publishers",
@@ -98,7 +100,8 @@ $folders = @(
 
     # --- Tầng Application (Chứa Logic nghiệp vụ) ---
     "src\Application\Services",
-    "src\Application\Interfaces",
+    "src\Application\Services\Interfaces",
+    "src\Application\Services\Implementations",
     "src\Application\DTOs",
     "src\Application\DTOs\Requests",
     "src\Application\DTOs\Responses",

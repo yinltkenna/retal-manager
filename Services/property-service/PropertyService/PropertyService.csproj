@@ -7,19 +7,36 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.3" />
+    <Compile Remove="src\Domain\Interfaces\**" />
+    <Content Remove="src\Domain\Interfaces\**" />
+    <EmbeddedResource Remove="src\Domain\Interfaces\**" />
+    <None Remove="src\Domain\Interfaces\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.14" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.6.22" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\EventContracts\EventContracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="src\Application\Definitions\" />
     <Folder Include="src\Application\DTOs\Requests\" />
     <Folder Include="src\Application\DTOs\Responses\" />
     <Folder Include="src\Application\Interfaces\" />
     <Folder Include="src\Application\Mappings\" />
     <Folder Include="src\Application\Services\" />
     <Folder Include="src\Domain\Enums\" />
-    <Folder Include="src\Domain\Interfaces\" />
     <Folder Include="src\Infrastructure\Caching\" />
-    <Folder Include="src\Infrastructure\Data\" />
     <Folder Include="src\Infrastructure\Messaging\Consumers\" />
     <Folder Include="src\Infrastructure\Messaging\Outbox\" />
     <Folder Include="src\Infrastructure\Messaging\Publishers\" />

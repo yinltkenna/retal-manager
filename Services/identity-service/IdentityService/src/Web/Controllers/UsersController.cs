@@ -1,8 +1,10 @@
-using EventContracts.Authorization;
+using EventContracts.Authorization.Permissions.IdentityService;
 using IdentityService.src.Application.DTOs.Requests.User;
 using IdentityService.src.Application.Services.Interfaces;
+using IdentityService.src.Web.Common.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace IdentityService.src.Web.Controllers
 {
@@ -56,8 +58,8 @@ namespace IdentityService.src.Web.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            var result = await _userService.CreateUserAsync(request);
+            var currentUserId = new GetUserIdFromToken().UserIdFromToken;
+            var result = await _userService.CreateUserAsync(request, currentUserId.Value);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
@@ -96,7 +98,11 @@ namespace IdentityService.src.Web.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var result = await _userService.DeleteUserAsync(id);
+            var currentUserId = new GetUserIdFromToken().UserIdFromToken;
+            if (currentUserId == null)
+                return Unauthorized();
+
+            var result = await _userService.DeleteUserAsync(id, currentUserId.Value);
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
@@ -121,5 +127,6 @@ namespace IdentityService.src.Web.Controllers
             var result = await _userService.UnlockUserAsync(id);
             return result.Success ? Ok(result) : BadRequest(result);
         }
+        
     }
 }

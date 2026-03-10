@@ -1,0 +1,3 @@
+1. Trong Authorization/Definitions/PermissionDefinitions, cần định nghĩa trước cần quyền ở ngoại IdentityService. </br>
+Ví dụ: Ở Property cần định nghĩa quyền thì cần làm như file [PropertyService](../../EventContracts/Authorization/Permissions/PropertyService/AmenityPermissions.cs). Sau đó định nghĩa ở [PropertyPermissionsDefinitions](../../EventContracts/Authorization/Definitions/PermissionDefinitions/PropertyPermissionDefinitions.cs). <br>
+Để có Id thì phải vào [DefId](../../EventContracts/Authorization/DefId.cs) cập nhật.

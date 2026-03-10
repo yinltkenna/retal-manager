@@ -99,68 +99,6 @@ namespace IdentityService.src.Infrastructure.Data.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("Permissions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a8e96f8f-6ae8-4ffb-bb90-5a90786951d1"),
-                            Code = "user.view",
-                            Group = "User",
-                            IsActive = true,
-                            Name = "View User",
-                            SortOrder = 1,
-                            Type = "API"
-                        },
-                        new
-                        {
-                            Id = new Guid("c9a3c1a0-2d0a-4a88-bfa2-72ee4178fd3f"),
-                            Code = "user.create",
-                            Group = "User",
-                            IsActive = true,
-                            Name = "Create User",
-                            SortOrder = 2,
-                            Type = "API"
-                        },
-                        new
-                        {
-                            Id = new Guid("3f9c82c7-aa6e-4b34-9e35-971f2be1a378"),
-                            Code = "user.update",
-                            Group = "User",
-                            IsActive = true,
-                            Name = "Update User",
-                            SortOrder = 3,
-                            Type = "API"
-                        },
-                        new
-                        {
-                            Id = new Guid("7c5d8dc0-7169-4b2e-8d44-9a7bb9fcc0e8"),
-                            Code = "user.delete",
-                            Group = "User",
-                            IsActive = true,
-                            Name = "Delete User",
-                            SortOrder = 4,
-                            Type = "API"
-                        },
-                        new
-                        {
-                            Id = new Guid("e8c1e1b3-50ac-4361-a2f1-3736ca3d6a92"),
-                            Code = "user.lock",
-                            Group = "User",
-                            IsActive = true,
-                            Name = "Lock User",
-                            SortOrder = 5,
-                            Type = "API"
-                        },
-                        new
-                        {
-                            Id = new Guid("1b5aeb2f-e5b6-41c4-9c6a-3a8a9acb0d3f"),
-                            Code = "user.view_logs",
-                            Group = "User",
-                            IsActive = true,
-                            Name = "View User Logs",
-                            SortOrder = 6,
-                            Type = "API"
-                        });
                 });
 
             modelBuilder.Entity("IdentityService.src.Domain.Entities.RefreshToken", b =>
@@ -224,24 +162,6 @@ namespace IdentityService.src.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("5a1c2e3f-4b6d-4c8e-9f1a-2b3c4d5e6f7a"),
-                            Description = "Admin role with full permissions",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = new Guid("6f7a8b9c-1d2e-3f4a-5b6c-7d8e9f0a1b2c"),
-                            Description = "User role with limited permissions",
-                            IsActive = true,
-                            IsDeleted = false,
-                            Name = "User"
-                        });
                 });
 
             modelBuilder.Entity("IdentityService.src.Domain.Entities.RolePermission", b =>
@@ -257,48 +177,6 @@ namespace IdentityService.src.Infrastructure.Data.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("RolePermissions");
-
-                    b.HasData(
-                        new
-                        {
-                            RoleId = new Guid("5a1c2e3f-4b6d-4c8e-9f1a-2b3c4d5e6f7a"),
-                            PermissionId = new Guid("a8e96f8f-6ae8-4ffb-bb90-5a90786951d1")
-                        },
-                        new
-                        {
-                            RoleId = new Guid("5a1c2e3f-4b6d-4c8e-9f1a-2b3c4d5e6f7a"),
-                            PermissionId = new Guid("c9a3c1a0-2d0a-4a88-bfa2-72ee4178fd3f")
-                        },
-                        new
-                        {
-                            RoleId = new Guid("5a1c2e3f-4b6d-4c8e-9f1a-2b3c4d5e6f7a"),
-                            PermissionId = new Guid("3f9c82c7-aa6e-4b34-9e35-971f2be1a378")
-                        },
-                        new
-                        {
-                            RoleId = new Guid("5a1c2e3f-4b6d-4c8e-9f1a-2b3c4d5e6f7a"),
-                            PermissionId = new Guid("7c5d8dc0-7169-4b2e-8d44-9a7bb9fcc0e8")
-                        },
-                        new
-                        {
-                            RoleId = new Guid("5a1c2e3f-4b6d-4c8e-9f1a-2b3c4d5e6f7a"),
-                            PermissionId = new Guid("e8c1e1b3-50ac-4361-a2f1-3736ca3d6a92")
-                        },
-                        new
-                        {
-                            RoleId = new Guid("5a1c2e3f-4b6d-4c8e-9f1a-2b3c4d5e6f7a"),
-                            PermissionId = new Guid("1b5aeb2f-e5b6-41c4-9c6a-3a8a9acb0d3f")
-                        },
-                        new
-                        {
-                            RoleId = new Guid("6f7a8b9c-1d2e-3f4a-5b6c-7d8e9f0a1b2c"),
-                            PermissionId = new Guid("a8e96f8f-6ae8-4ffb-bb90-5a90786951d1")
-                        },
-                        new
-                        {
-                            RoleId = new Guid("6f7a8b9c-1d2e-3f4a-5b6c-7d8e9f0a1b2c"),
-                            PermissionId = new Guid("1b5aeb2f-e5b6-41c4-9c6a-3a8a9acb0d3f")
-                        });
                 });
 
             modelBuilder.Entity("IdentityService.src.Domain.Entities.User", b =>
@@ -373,36 +251,6 @@ namespace IdentityService.src.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@example.com",
-                            IsActive = false,
-                            IsDeleted = false,
-                            IsEmailConfirmed = true,
-                            LastUpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PasswordHash = "$2a$11$AEB8w8vo4lFGC971/BTZeu1s3eBRZ49bLuz7ZIRB.oMDlvsAHqGwe",
-                            PhoneNumber = "1234567890",
-                            Status = "Active",
-                            Username = "adminApp"
-                        },
-                        new
-                        {
-                            Id = new Guid("6f7a8b9c-1d2e-3f4a-5b6c-7d8e9f0a1b2c"),
-                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "userApp@gmail.com",
-                            IsActive = false,
-                            IsDeleted = false,
-                            IsEmailConfirmed = true,
-                            LastUpdatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PasswordHash = "$2a$11$AEB8w8vo4lFGC971/BTZeu1s3eBRZ49bLuz7ZIRB.oMDlvsAHqGwe",
-                            PhoneNumber = "1234567880",
-                            Status = "Active",
-                            Username = "userApp"
-                        });
                 });
 
             modelBuilder.Entity("IdentityService.src.Domain.Entities.UserRole", b =>
@@ -418,18 +266,6 @@ namespace IdentityService.src.Infrastructure.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = new Guid("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d"),
-                            RoleId = new Guid("5a1c2e3f-4b6d-4c8e-9f1a-2b3c4d5e6f7a")
-                        },
-                        new
-                        {
-                            UserId = new Guid("6f7a8b9c-1d2e-3f4a-5b6c-7d8e9f0a1b2c"),
-                            RoleId = new Guid("6f7a8b9c-1d2e-3f4a-5b6c-7d8e9f0a1b2c")
-                        });
                 });
 
             modelBuilder.Entity("IdentityService.src.Domain.Entities.Permission", b =>

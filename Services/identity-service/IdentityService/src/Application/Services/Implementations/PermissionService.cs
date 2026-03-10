@@ -13,13 +13,11 @@ namespace IdentityService.src.Application.Services.Implementations
     public class PermissionService(ILogger<PermissionService> logger,
                                    IPermissionRepository permRepo,
                                    IRoleRepository roleRepo,
-                                   AppDbContext db,
                                    IUnitOfWork uow,
                                    IMapper mapper) : IPermissionService
     {
         private readonly IPermissionRepository _permRepo = permRepo;
         private readonly IRoleRepository _roleRepo = roleRepo;
-        private readonly AppDbContext _db = db;
         private readonly IUnitOfWork _uow = uow;
         private readonly IMapper _mapper = mapper;
         private readonly ILogger<PermissionService> _logger = logger;
@@ -72,13 +70,13 @@ namespace IdentityService.src.Application.Services.Implementations
             try
             {
                 // maybe check code uniqueness
-                var existing = await _db.Permissions.FirstOrDefaultAsync(p => p.Code == request.Code);
+                var existing = await _permRepo.GetPermissionByCodeAsync(request.Code);
                 if (existing != null)
                     return ApiResponse<string>.FailResponse("Permission code already exists");
 
                 var perm = _mapper.Map<Permission>(request);
                 perm.Id = Guid.NewGuid();
-                await _db.Permissions.AddAsync(perm);
+                await _permRepo.AddAsync(perm);
                 await _uow.SaveChangesAsync();
                 return ApiResponse<string>.SuccessResponse("Permission created");
             }
@@ -113,21 +111,40 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
+                var existing = await _permRepo.GetExistingRolePermissionsAsync(request.RoleIds, request.PermissionIds);
+
+                var existingSet = new HashSet<(Guid RoleId, Guid PermissionId)>(
+                    existing.Select(x => (x.RoleId, x.PermissionId))
+                );
+
+                var toAdd = new List<RolePermission>();
+
                 foreach (var roleId in request.RoleIds)
                 {
                     foreach (var permId in request.PermissionIds)
                     {
-                        bool exists = await _db.RolePermissions.AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permId);
-                        if (!exists)
-                            _db.RolePermissions.Add(new RolePermission { RoleId = roleId, PermissionId = permId });
+                        if (!existingSet.Contains((roleId, permId)))
+                        {
+                            toAdd.Add(new RolePermission
+                            {
+                                RoleId = roleId,
+                                PermissionId = permId
+                            });
+                        }
                     }
                 }
-                await _uow.SaveChangesAsync();
-                return ApiResponse<string>.SuccessResponse("Assigned");
+
+                if (toAdd.Count != 0)
+                {
+                    await _permRepo.AddRolePermissionsRangeAsync(toAdd);
+                    await _uow.SaveChangesAsync();
+                }
+
+                return ApiResponse<string>.SuccessResponse("Assigned successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"AssignToRoleAsync error: {ex.Message}");
+                _logger.LogError(ex, "AssignToRoleAsync error: {Message}", ex.Message);
                 return ApiResponse<string>.FailResponse("Error assigning permissions");
             }
         }
@@ -136,14 +153,16 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
-                var toRemove = _db.RolePermissions.Where(rp => request.RoleIds.Contains(rp.RoleId) && request.PermissionIds.Contains(rp.PermissionId));
-                _db.RolePermissions.RemoveRange(toRemove);
+                await _permRepo.RemoveRolePermissionsRangeAsync(request.RoleIds, request.PermissionIds);
+
+                // Lưu thay đổi qua Unit of Work
                 await _uow.SaveChangesAsync();
-                return ApiResponse<string>.SuccessResponse("Removed");
+
+                return ApiResponse<string>.SuccessResponse("Removed successfully");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"RemoveFromRoleAsync error: {ex.Message}");
+                _logger.LogError(ex, "RemoveFromRoleAsync error: {Message}", ex.Message);
                 return ApiResponse<string>.FailResponse("Error removing permissions");
             }
         }

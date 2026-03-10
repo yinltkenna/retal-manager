@@ -10,7 +10,11 @@ namespace IdentityService.src.Infrastructure.Repositories.Implementations
         ) : IUserRepository
     {
         private readonly AppDbContext _db = db;
-
+        
+        public Task<IQueryable<User>> GetAllUsers()
+        {
+            return Task.FromResult(_db.Users.AsQueryable());
+        }
         public async Task AddAsync(User user)
         {
             await _db.Users.AddAsync(user);

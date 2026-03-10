@@ -408,7 +408,7 @@ namespace IdentityService.src.Application.Services.Implementations
                     _logger.LogError($"Default role '{RoleEnum.User}' not found in database");
                     return ApiResponse<string>.FailResponse("Default role not configured");
                 }
-                await _roleService.AssignRoleToUser(role.Id, newUser.Id);
+                await _roleService.AssignRoleToUser(role.Id, newUser.Id, Guid.Empty);
 
                 // If user provided CodeContract -> try claim contract
                 if (!string.IsNullOrWhiteSpace(request.CodeContract))
