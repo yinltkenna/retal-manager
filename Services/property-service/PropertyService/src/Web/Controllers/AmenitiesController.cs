@@ -1,6 +1,5 @@
 using PropertyService.src.Application.DTOs.Requests.Amenity;
 using PropertyService.src.Application.Services.Interfaces;
-using PropertyService.src.Web.Common.TemplateResponses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

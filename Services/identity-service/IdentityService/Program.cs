@@ -2,6 +2,7 @@
 using EventContracts.Authorization.PermissionsAuthorization;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using IdentityService.src.Application.Interfaces;
 using IdentityService.src.Application.Mapping;
 using IdentityService.src.Application.Services.Implementations;
 using IdentityService.src.Application.Services.Interfaces;
@@ -141,6 +142,7 @@ builder.Services.AddHttpClient<INotificationClient, NotificationClient>(client =
 builder.Services.AddAutoMapper(typeof(IdentityProfile));
 
 // Services
+builder.Services.AddScoped<IPermissionChecker, PermissionChecker>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
@@ -150,7 +152,7 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Property Service API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Identity Service API", Version = "v1" });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -207,13 +209,33 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 });
 
 builder.Services.AddHttpClient();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowGateway", policy =>
+    {
+        policy.WithOrigins("http://localhost:5000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 var app = builder.Build();
-
+app.UseCors("AllowGateway");
 // Add exception handling middleware
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger(c =>
+    {
+        c.PreSerializeFilters.Add((swagger, httpReq) =>
+        {
+            // "Ép" Swagger UI tại Gateway (port 5000) phải chèn thêm /identity vào trước mọi request
+            var gatewayUrl = "http://localhost:5000/identity";
+
+            swagger.Servers = [
+                new() { Url = gatewayUrl }
+            ];
+        });
+    });
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity Service V1");

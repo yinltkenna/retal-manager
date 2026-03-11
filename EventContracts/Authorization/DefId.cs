@@ -57,5 +57,44 @@
         public static readonly Guid RoomHistoryViewId = Guid.Parse("99887766-5544-3322-1100-001122334455");
 
         public static readonly Guid RoomStatusLogViewId = Guid.Parse("a2a4b6a8-90ab-cdef-b234-5678a0abcdef");
+
+        // Tenancy
+        public static readonly Guid TenantViewId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000001");
+        public static readonly Guid TenantCreateId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000002");
+        public static readonly Guid TenantUpdateId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000003");
+        public static readonly Guid TenantDeleteId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000004");
+
+        public static readonly Guid TenantDocumentViewId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000005");
+        public static readonly Guid TenantDocumentCreateId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000006");
+        public static readonly Guid TenantDocumentUpdateId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000007");
+        public static readonly Guid TenantDocumentDeleteId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000008");
+
+        public static readonly Guid ContractViewId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000009");
+        public static readonly Guid ContractCreateId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000000a");
+        public static readonly Guid ContractUpdateId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000000b");
+        public static readonly Guid ContractDeleteId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000000c");
+
+        public static readonly Guid ContractMemberViewId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000000d");
+        public static readonly Guid ContractMemberCreateId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000000e");
+        public static readonly Guid ContractMemberDeleteId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000000f");
+
+        public static readonly Guid ContractFileViewId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000010");
+        public static readonly Guid ContractFileCreateId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000011");
+        public static readonly Guid ContractFileDeleteId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000012");
+
+        public static readonly Guid ContractExtensionViewId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000013");
+        public static readonly Guid ContractExtensionCreateId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000014");
+        public static readonly Guid ContractExtensionUpdateId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000015");
+        public static readonly Guid ContractExtensionDeleteId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000016");
+
+        public static readonly Guid ContractTerminationViewId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000017");
+        public static readonly Guid ContractTerminationCreateId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000018");
+        public static readonly Guid ContractTerminationUpdateId = Guid.Parse("e1f4b3f0-0000-4000-8000-000000000019");
+        public static readonly Guid ContractTerminationDeleteId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000001a");
+
+        public static readonly Guid ContractDepositTransactionViewId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000001b");
+        public static readonly Guid ContractDepositTransactionCreateId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000001c");
+        public static readonly Guid ContractDepositTransactionUpdateId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000001d");
+        public static readonly Guid ContractDepositTransactionDeleteId = Guid.Parse("e1f4b3f0-0000-4000-8000-00000000001e");
     }
 }

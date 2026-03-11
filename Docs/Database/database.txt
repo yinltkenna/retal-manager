@@ -87,12 +87,7 @@ InvoiceHistory: Id, InvoiceId, OldStatus, NewStatus, ChangedAt, ChangedBy
 
 InvoiceSnapshot: Id, InvoiceId, RoomNumber, TenantName, ContractCode, BranchAddress, CreatedAt
 
-6. Payment
-PaymentAccount: Id, BranchId, BankName, AccountNumber, AccountHolder, QrTemplate
-
-Transaction: Id, InvoiceId, TransactionCode, Amount, PaymentMethod, Status, PaymentDate
-
-7. Notification
+6. Notification
 Notification: Id, Title, Content, Type, ReferenceId, CreatedAt
 
 NotificationRecipient: Id, NotificationId, ReceiverId, IsRead, ReadAt, CreatedAt
@@ -105,7 +100,7 @@ NotificationChannelConfig: Id, Channel, ConfigKey, ConfigValue, IsActive, Create
 
 NotificationUserPreference: Id, UserId, NotificationType, Channel, IsEnabled
 
-8. Media
+7. Media
 FileStorage: Id, FileName, OriginalFileName, ContentType, Extension, FileSize, StoragePath, PublicUrl, CheckSum, UploadedBy, CreatedAt
 
 FileReference: Id, FileId, EntityType, EntityId, Purpose, CreatedAt

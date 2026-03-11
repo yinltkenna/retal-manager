@@ -5,7 +5,9 @@ using Ocelot.Middleware;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 // Load Ocelot routing configuration
 builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
@@ -42,6 +44,20 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    // Gom nhóm Identity Service
+    c.SwaggerEndpoint("/identity/swagger.json", "Identity API");
+
+    // Gom nhóm Property Service
+    c.SwaggerEndpoint("/property/swagger.json", "Property API");
+
+    // Gom nhóm Tenancy Service
+    c.SwaggerEndpoint("/tenancy/swagger.json", "Tenancy API");
+
+    c.RoutePrefix = "swagger"; // Truy cập tại: http://localhost:5002/swagger
+});
 app.UseOcelot().Wait();
 
 app.Run();

@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Services\identity-service\IdentityService\Dockerfile
     ports:
-      - "5000:8080"
+      - "5001:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=host.docker.internal;Database=IdentityService_Db;User Id=sa;Password=123;TrustServerCertificate=True;
@@ -16,17 +16,18 @@ services:
       - JwtSettings__Issuer=RentalIdentity
       - JwtSettings__Audience=RentalClients
       - JwtSettings__ExpiresInMinutes=60
-    depends_on:
-      - redis
-      - rabbitmq
+    # depends_on:
+    #   - redis
+    #   - rabbitmq
     networks:
       - rental-net
+
   property:
     build:
       context: .
       dockerfile: Services\property-service\PropertyService\Dockerfile
     ports:
-      - "5003:8080"
+      - "5002:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=host.docker.internal;Database=PropertyService_Db;User Id=sa;Password=123;TrustServerCertificate=True;
@@ -43,12 +44,36 @@ services:
       - rabbitmq
     networks:
       - rental-net
+
+  tenancy:
+    build:
+      context: .
+      dockerfile: Services\tenancy-service\TenancyService\Dockerfile
+    ports:
+      - "5003:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=host.docker.internal;Database=TenancyService_Db;User Id=sa;Password=123;TrustServerCertificate=True;
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - Redis__Connection=redis:6379
+      - JwtSettings__Key=66869724acdaf603c964c8415f07cc79
+      - JwtSettings__Issuer=RentalIdentity
+      - JwtSettings__Audience=RentalClients
+      - JwtSettings__ExpiresInMinutes=60
+    depends_on:
+      - redis
+      - rabbitmq
+    networks:
+      - rental-net
+
   notification:
     build:
       context: .
       dockerfile: Services\notification-service\NotificationService\Dockerfile
     ports:
-      - "5001:8080"
+      - "5004:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=host.docker.internal;Database=NotificationService_Db;User Id=sa;Password=123;TrustServerCertificate=True;
@@ -65,12 +90,13 @@ services:
       - rabbitmq
     networks:
       - rental-net
+
   gateway:
     build:
       context: .
       dockerfile: Services\gateway\ApiGateway\Dockerfile
     ports:
-      - "5002:8080"
+      - "5000:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - JwtSettings__Key=66869724acdaf603c964c8415f07cc79
@@ -102,7 +128,10 @@ services:
       - "15672:15672"
     networks:
       - rental-net
-
+      
+volumes:
+  vision-models:
+  
 networks:
   rental-net:
     driver: bridge

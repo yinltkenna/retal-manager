@@ -1,4 +1,4 @@
-namespace EventContracts.Authorization.Permissions
+namespace EventContracts.Authorization.Permissions.PropertyService
 {
     public static class BranchPermissions
     {

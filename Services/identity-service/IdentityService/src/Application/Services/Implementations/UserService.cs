@@ -1,14 +1,13 @@
 using AutoMapper;
 using EventContracts.Authorization.Permissions.IdentityService;
-using EventContracts.Authorization.PermissionsAuthorization;
 using IdentityService.src.Application.DTOs.Requests.User;
 using IdentityService.src.Application.DTOs.Responses.Permessions;
 using IdentityService.src.Application.DTOs.Responses.User;
+using IdentityService.src.Application.Interfaces;
 using IdentityService.src.Application.Services.Interfaces;
 using IdentityService.src.Domain.Entities;
 using IdentityService.src.Domain.Enums;
 using IdentityService.src.Infrastructure.Caching;
-using IdentityService.src.Infrastructure.Data;
 using IdentityService.src.Infrastructure.Messaging.Publishers;
 using IdentityService.src.Infrastructure.Repositories.Interfaces;
 using IdentityService.src.Web.Common.TemplateResponses;
@@ -26,9 +25,8 @@ namespace IdentityService.src.Application.Services.Implementations
                              IUnitOfWork uow,
                              IRabbitMqPublisher publisher,
                              ICacheService cache,
-                             IHttpContextAccessor httpContextAccessor,
-                             IAuthorizationService authorizationService,
                              IOptions<JwtSettings> jwtOptions,
+                             IPermissionChecker permissionChecker,
                              IMapper mapper) : IUserService
     {
         private readonly IUserRepository _userRepo = userRepo;
@@ -39,26 +37,14 @@ namespace IdentityService.src.Application.Services.Implementations
         private readonly ICacheService _cache = cache;
         private readonly JwtSettings _jwtSettings = jwtOptions.Value;
         private readonly IMapper _mapper = mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService = authorizationService;
         private readonly ILogger<UserService> _logger = logger;
-
-        private async Task<bool> HasPermissionAsync(string permission)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !user.Identity?.IsAuthenticated == true)
-                return false;
-
-            var result = await _authorizationService.AuthorizeAsync(user, null, new PermissionRequirement(permission));
-            return result.Succeeded;
-        }
+        private readonly IPermissionChecker _permissionChecker = permissionChecker;
 
         public async Task<ApiResponse<string>> CreateUserAsync(CreateUserRequest request, Guid currentUserId)
         {
             try
             {
-                // Validate caller permission (in addition to controller-level policy)
-                if (!await HasPermissionAsync(UserPermissions.CREATE))
+                if (!await _permissionChecker.HasPermissionAsync(UserPermissions.CREATE))
                 {
                     return ApiResponse<string>.FailResponse("Unauthorized");
                 }
@@ -127,7 +113,7 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
-                if (!await HasPermissionAsync(UserPermissions.DELETE))
+                if (!await _permissionChecker.HasPermissionAsync(UserPermissions.DELETE))
                 {
                     return ApiResponse<string>.FailResponse("Unauthorized");
                 }
@@ -160,7 +146,7 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
-                if (!await HasPermissionAsync(UserPermissions.VIEW))
+                if (!await _permissionChecker.HasPermissionAsync(UserPermissions.VIEW))
                 {
                     return ApiResponse<PagedResponse<UserListResponse>>.FailResponse("Unauthorized");
                 }
@@ -203,7 +189,7 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
-                if (!await HasPermissionAsync(UserPermissions.VIEW))
+                if (!await _permissionChecker.HasPermissionAsync(UserPermissions.VIEW))
                 {
                     return ApiResponse<UserDetailResponse>.FailResponse("Unauthorized");
                 }
@@ -232,7 +218,7 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
-                if (!await HasPermissionAsync(UserPermissions.VIEW))
+                if (!await _permissionChecker.HasPermissionAsync(UserPermissions.VIEW))
                 {
                     return ApiResponse<UserProfileResponse>.FailResponse("Unauthorized");
                 }
@@ -252,7 +238,7 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
-                if (!await HasPermissionAsync(UserPermissions.LOCK))
+                if (!await _permissionChecker.HasPermissionAsync(UserPermissions.LOCK))
                 {
                     return ApiResponse<string>.FailResponse("Unauthorized");
                 }
@@ -276,7 +262,7 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
-                if (!await HasPermissionAsync(UserPermissions.LOCK))
+                if (!await _permissionChecker.HasPermissionAsync(UserPermissions.LOCK))
                 {
                     return ApiResponse<string>.FailResponse("Unauthorized");
                 }
@@ -299,7 +285,7 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
-                if (!await HasPermissionAsync(UserPermissions.UPDATE))
+                if (!await _permissionChecker.HasPermissionAsync(UserPermissions.UPDATE))
                 {
                     return ApiResponse<string>.FailResponse("Unauthorized");
                 }
@@ -331,7 +317,7 @@ namespace IdentityService.src.Application.Services.Implementations
         {
             try
             {
-                if (!await HasPermissionAsync(UserPermissions.UPDATE))
+                if (!await _permissionChecker.HasPermissionAsync(UserPermissions.UPDATE))
                 {
                     return ApiResponse<string>.FailResponse("Unauthorized");
                 }

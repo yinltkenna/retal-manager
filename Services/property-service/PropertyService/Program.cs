@@ -17,7 +17,7 @@ using PropertyService.src.Infrastructure.Repositories.Implementations;
 using PropertyService.src.Infrastructure.Repositories.Interfaces;
 using PropertyService.src.Web.Configurations;
 using PropertyService.src.Web.Common.TemplateResponses;
-using EventContracts.Authorization.Permissions;
+using EventContracts.Authorization.Permissions.PropertyService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -167,12 +167,30 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowGateway", policy =>
+    {
+        policy.WithOrigins("http://localhost:5000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 var app = builder.Build();
-
+app.UseCors("AllowGateway");
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger(c =>
+    {
+        c.PreSerializeFilters.Add((swagger, httpReq) =>
+        {
+            var gatewayUrl = "http://localhost:5000/property";
+
+            swagger.Servers = [
+                new() { Url = gatewayUrl }
+            ];
+        });
+    });
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Property Service V1");

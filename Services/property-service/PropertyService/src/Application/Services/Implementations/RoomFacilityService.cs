@@ -1,5 +1,5 @@
 using AutoMapper;
-using EventContracts.Authorization.Permissions;
+using EventContracts.Authorization.Permissions.PropertyService;
 using PropertyService.src.Application.DTOs.Requests.RoomFacility;
 using PropertyService.src.Application.DTOs.Responses.RoomFacility;
 using PropertyService.src.Application.Interfaces;

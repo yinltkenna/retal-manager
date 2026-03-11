@@ -1,4 +1,4 @@
-﻿using EventContracts.Authorization.Permissions;
+﻿using EventContracts.Authorization.Permissions.PropertyService;
 namespace EventContracts.Authorization.Definitions.PermissionDefinitions
 {
     public static class PropertyPermissionDefinitions
