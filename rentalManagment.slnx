@@ -1,0 +1,49 @@
+<Solution>
+  <Folder Name="/Services/" />
+  <Folder Name="/Services/billing-service/">
+    <Project Path="Services/billing-service/BillingService.Application/BillingService.Application.csproj" />
+    <Project Path="Services/billing-service/BillingService.Domain/BillingService.Domain.csproj" />
+    <Project Path="Services/billing-service/BillingService.Infrastructure/BillingService.Infrastructure.csproj" />
+    <Project Path="Services/billing-service/BillingService.Tests/BillingService.Tests.csproj" />
+    <Project Path="Services/billing-service/BillingService.Web/BillingService.Web.csproj" />
+  </Folder>
+  <Folder Name="/Services/gateway/">
+    <Project Path="Services/gateway/ApiGateway/ApiGateway.csproj" />
+  </Folder>
+  <Folder Name="/Services/identity-service/">
+    <Project Path="Services/identity-service/IdentityService.Application/IdentityService.Application.csproj" />
+    <Project Path="Services/identity-service/IdentityService.Domain/IdentityService.Domain.csproj" />
+    <Project Path="Services/identity-service/IdentityService.Infrastructure/IdentityService.Infrastructure.csproj" />
+    <Project Path="Services/identity-service/IdentityService.Tests/IdentityService.Tests.csproj" />
+    <Project Path="Services/identity-service/IdentityService.Web/IdentityService.Web.csproj" />
+  </Folder>
+  <Folder Name="/Services/notification-service/">
+    <Project Path="Services/notification-service/NotificationService.Application/NotificationService.Application.csproj" />
+    <Project Path="Services/notification-service/NotificationService.Domain/NotificationService.Domain.csproj" />
+    <Project Path="Services/notification-service/NotificationService.Infrastructure/NotificationService.Infrastructure.csproj" />
+    <Project Path="Services/notification-service/NotificationService.Tests/NotificationService.Tests.csproj" />
+    <Project Path="Services/notification-service/NotificationService.Web/NotificationService.Web.csproj" />
+  </Folder>
+  <Folder Name="/Services/property-service/">
+    <Project Path="Services/property-service/PropertyService.Application/PropertyService.Application.csproj" />
+    <Project Path="Services/property-service/PropertyService.Domain/PropertyService.Domain.csproj" />
+    <Project Path="Services/property-service/PropertyService.Infrastructure/PropertyService.Infrastructure.csproj" />
+    <Project Path="Services/property-service/PropertyService.Tests/PropertyService.Tests.csproj" />
+    <Project Path="Services/property-service/PropertyService.Web/PropertyService.Web.csproj" />
+  </Folder>
+  <Folder Name="/Services/tenancy-service/">
+    <Project Path="Services/tenancy-service/TenancyService.Application/TenancyService.Application.csproj" />
+    <Project Path="Services/tenancy-service/TenancyService.Domain/TenancyService.Domain.csproj" />
+    <Project Path="Services/tenancy-service/TenancyService.Infrastructure/TenancyService.Infrastructure.csproj" />
+    <Project Path="Services/tenancy-service/TenancyService.Tests/TenancyService.Tests.csproj" />
+    <Project Path="Services/tenancy-service/TenancyService.Web/TenancyService.Web.csproj" />
+  </Folder>
+  <Folder Name="/Services/utility-service/">
+    <Project Path="Services/utility-service/UtilityService.Application/UtilityService.Application.csproj" />
+    <Project Path="Services/utility-service/UtilityService.Domain/UtilityService.Domain.csproj" />
+    <Project Path="Services/utility-service/UtilityService.Infrastructure/UtilityService.Infrastructure.csproj" />
+    <Project Path="Services/utility-service/UtilityService.Tests/UtilityService.Tests.csproj" />
+    <Project Path="Services/utility-service/UtilityService.Web/UtilityService.Web.csproj" />
+  </Folder>
+  <Project Path="EventContracts/EventContracts.csproj" />
+</Solution>

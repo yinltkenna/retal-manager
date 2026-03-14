@@ -1,0 +1,6 @@
+@TenancyService.Web_HostAddress = http://localhost:5296
+
+GET {{TenancyService.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

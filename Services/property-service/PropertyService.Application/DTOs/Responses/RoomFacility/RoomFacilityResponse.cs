@@ -1,0 +1,12 @@
+namespace PropertyService.Application.DTOs.Responses.RoomFacility
+{
+    public class RoomFacilityResponse
+    {
+        public Guid Id { get; set; }
+        public Guid RoomId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+    }
+}

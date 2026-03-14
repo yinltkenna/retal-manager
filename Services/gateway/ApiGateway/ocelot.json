@@ -1,0 +1,110 @@
+{
+    "Routes": [
+        // --- 1. SWAGGER ROUTES (Cần để trên cùng, không Auth) ---
+        {
+            "DownstreamPathTemplate": "/swagger/v1/swagger.json",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "identity",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/identity/swagger.json",
+            "UpstreamHttpMethod": [ "Get" ]
+        },
+        {
+            "DownstreamPathTemplate": "/swagger/v1/swagger.json",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "property",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/property/swagger.json",
+            "UpstreamHttpMethod": [ "Get" ]
+        },
+        {
+            "DownstreamPathTemplate": "/swagger/v1/swagger.json",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "tenancy",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/tenancy/swagger.json",
+            "UpstreamHttpMethod": [ "Get" ]
+        },
+
+        // --- 2. IDENTITY SERVICE: PUBLIC API (Login/Register) ---
+        {
+            "DownstreamPathTemplate": "/api/Auth/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "identity",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/identity/api/Auth/{everything}",
+            "UpstreamHttpMethod": [ "Post" ]
+        },
+
+        // --- 3. IDENTITY SERVICE: PROTECTED API (Users, Roles, Profile) ---
+        {
+            "DownstreamPathTemplate": "/api/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "identity",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/identity/api/{everything}",
+            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer",
+                "AllowedScopes": []
+            }
+        },
+
+        // --- 4. PROPERTY SERVICE: PROTECTED API (Amenities, Units, RoomTypes...) ---
+        {
+            "DownstreamPathTemplate": "/api/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "property",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/property/api/{everything}",
+            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer"
+            }
+        },
+
+        // --- 5. TENANCY SERVICE: PROTECTED API (Contracts, Invoices, Tenants...) ---
+        {
+            "DownstreamPathTemplate": "/api/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "tenancy",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/tenancy/api/{everything}",
+            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "Bearer"
+            }
+        }
+    ],
+    "GlobalConfiguration": {
+        "BaseUrl": "http://localhost:5000"
+    }
+}
